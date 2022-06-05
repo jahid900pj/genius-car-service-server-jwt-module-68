@@ -119,7 +119,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/hero', (req, res) => {
-    res.send('Hero meets hero ku')
+    res.send('Hero meets hero ku jahid')
 })
 
 app.listen(port, () => {
