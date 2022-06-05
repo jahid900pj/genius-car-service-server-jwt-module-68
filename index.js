@@ -10,9 +10,11 @@ const app = express();
 // middleware
 app.use(cors());
 app.use(express.json());
+////////////////////////////ssss/////////////////
 
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
+    // console.log('inside verifyJWT', authHeader)
     if (!authHeader) {
         return res.status(401).send({ message: 'unauthorized access' });
     }
@@ -27,8 +29,8 @@ function verifyJWT(req, res, next) {
     })
 }
 
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vwx9p.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+// connect your application
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5r1uz.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -37,7 +39,7 @@ async function run() {
         const serviceCollection = client.db('geniusCar').collection('service');
         const orderCollection = client.db('geniusCar').collection('order');
 
-        // AUTH
+        // AUTH jwt
         app.post('/login', async (req, res) => {
             const user = req.body;
             const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -46,7 +48,7 @@ async function run() {
             res.send({ accessToken });
         })
 
-        // SERVICES API
+        //// get maltipale data
         app.get('/service', async (req, res) => {
             const query = {};
             const cursor = serviceCollection.find(query);
@@ -54,6 +56,7 @@ async function run() {
             res.send(services);
         });
 
+        /// get single data 
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id;
             console.log(id);
@@ -62,7 +65,7 @@ async function run() {
             res.send(service);
         });
 
-        // POST
+        //post data in data base
         app.post('/service', async (req, res) => {
             const newService = req.body;
             const result = await serviceCollection.insertOne(newService);
@@ -79,6 +82,7 @@ async function run() {
 
         // Order Collection API
 
+        ///// get order data 
         app.get('/order', verifyJWT, async (req, res) => {
             const decodedEmail = req.decoded.email;
             const email = req.query.email;
@@ -88,11 +92,12 @@ async function run() {
                 const orders = await cursor.toArray();
                 res.send(orders);
             }
-            else{
-                res.status(403).send({message: 'forbidden access'})
+            else {
+                res.status(403).send({ message: 'forbidden access' })
             }
         })
 
+        ///// post order data
         app.post('/order', async (req, res) => {
             const order = req.body;
             const result = await orderCollection.insertOne(order);
@@ -105,13 +110,15 @@ async function run() {
     }
 }
 
+/////////////////////////////
+
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Running Genius Server');
+    res.send('Hallo world');
 });
 
-app.get('/hero', (req, res) =>{
+app.get('/hero', (req, res) => {
     res.send('Hero meets hero ku')
 })
 
